@@ -1,0 +1,710 @@
+= image:https://raw.githubusercontent.com/micronaut-projects/static-website/gh-pages/images/favicon-32x32.png[] https://alvarosanchez.github.io/micronaut-workshop/[Micronaut Workshop]
+Alvaro Sanchez-Mariscal <alvaro.sanchezmariscal@gmail.com>
+:toc: left
+:toclevels: 4
+:source-highlighter: highlightjs
+:icons: font
+:imagesdir: ./images
+
+++++
+<a href="https://github.com/alvarosanchez/micronaut-workshop-java"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+++++
+
+Introductory workshop about http://micronaut.io[Micronaut].
+
+== Software Requirements
+
+In order to do this workshop, you need the following:
+
+* Linux or MacOS with shell access, and the following installed:
+    - `curl`.
+    - `wget`.
+    - `unzip`.
+    - `git`.
+* JDK 8.
+* Docker. Please pull the following images before attending the workshop:
+    - `consul`.
+    - `mongo`.
+
+=== Micronaut CLI
+
+1. Install http://sdkman.io[SDKMAN!] if you haven't done so already.
+2. Install Micronaut CLI:
+
+    $ sdk install micronaut
+
+3. Ensure the CLI is installed properly:
+
+    $ mn --version
+    | Micronaut Version: 1.0.0
+    | JVM Version: 1.8.0_181
+
+=== Clone this repository
+
+Once done, you can clone this repo:
+
+----
+git clone https://github.com/alvarosanchez/micronaut-workshop-java.git
+----
+
+NOTE: You will find each exercise's template files on each `exNN` folder. Solution is always inside a `solution` folder. To highlight the actions you actually need to perform, an icon is used: icon:hand-o-right[]
+
+== Application architecture 
+
+Throughout this workshop, we will be creating a football (soccer) management system.
+
+ifdef::generate-diagrams[]
+[plantuml, football-diagram, png]
+....
+together {
+    node Fixtures
+    database Mongo
+}
+
+together {
+    node Clubs
+    database H2
+}
+
+Clubs -> H2
+H2 -[hidden]- Fixtures
+Fixtures -> Mongo
+Fixtures -> Clubs
+....
+endif::[]
+
+image::football-diagram.png[]
+
+* `clubs` is the microservice responsible for managing clubs. It uses GORM for
+  Hibernate as a data access layer.
+* `fixtures` manages all game fixtures, storing its data in MongoDB. For the 
+  teams playing in a game, it doesn't store their full details, but rather their 
+  ID. It has a service-discovery-enabled HTTP client to fetch club details from 
+  the `clubs` microservice.
+
+:numbered:
+
+== Getting started with Micronaut and its CLI (25 minutes)
+
+TIP: Change to the `ex01` directory to work on this exercise
+
+The Micronaut CLI is the recommended way to create new Micronaut projects. The 
+CLI includes commands for generating specific categories of projects, allowing 
+you to choose between build tools, test frameworks, and even pick the language 
+you wish to use in your application. The CLI also provides commands for generating 
+artifacts such as controllers, client interfaces, and serverless functions.
+
+The `create-app` command is the starting point for creating Micronaut applications.
+The CLI is based on the concept of **profiles**. A profile consist of a project
+template (or skeleton), optional features, and profile-specific commands. Commands 
+from a profile typically are specific to the profile application type; for example, 
+the `service` profile (designed for creation of microservice applications) provides 
+the `create-controller` and `create-client` commands.
+
+=== Listing profiles (3 minutes)
+
+icon:hand-o-right[] You can list the available profiles with the `list-profiles` command:
+
+----
+$ mn list-profiles
+| Available Profiles
+--------------------
+  cli           The cli profile
+  federation    The federation profile
+  function-aws  The function profile for AWS Lambda
+  kafka         The Kafka messaging profile
+  profile       A profile for creating new Micronaut profiles
+  service       The service profile
+----
+
+
+Applications generated from a profile can be personalised with **features**. A 
+feature further customises the newly created project by adding additional 
+dependencies to the build, more files to the project skeleton, etc.
+
+=== Getting information about a profile (2 minutes)
+
+icon:hand-o-right[] To see all the features of a profile, you can
+use the `profile-info` command:
+
+----
+$ mn profile-info service                                                                                
+| Profile: service
+--------------------
+The service profile
+
+| Provided Commands:
+--------------------
+  create-bean           Creates a singleton bean
+  create-client         Creates a client interface
+  create-controller     Creates a controller and associated test
+  create-job            Creates a job with scheduled method
+  create-websocket-client  Creates a Websocket client
+  create-websocket-server  Creates a Websocket server
+  help                  Prints help information for a specific command
+
+| Provided Features:
+--------------------
+  annotation-api        Adds Java annotation API
+  cassandra             Adds support for Cassandra in the application
+  config-consul         Adds support for Distributed Configuration with Consul (https://www.consul.io)
+  discovery-consul      Adds support for Service Discovery with Consul (https://www.consul.io)
+  discovery-eureka      Adds support for Service Discovery with Eureka
+  graal-native-image    Allows Building a Native Image
+  groovy                Creates a Groovy application
+  hibernate-gorm        Adds support for GORM persistence framework
+  hibernate-jpa         Adds support for Hibernate/JPA
+  http-client           Adds support for creating HTTP clients
+  http-server           Adds support for running a Netty server
+  java                  Creates a Java application
+  jdbc-dbcp             Configures SQL DataSource instances using Commons DBCP
+  jdbc-hikari           Configures SQL DataSource instances using Hikari Connection Pool
+  jdbc-tomcat           Configures SQL DataSource instances using Tomcat Connection Pool
+  jib                   Adds support for Jib builds
+  jrebel                Adds support for class reloading with JRebel (requires separate JRebel installation)
+  junit                 Adds support for the JUnit testing framework
+  kafka                 Adds support for Kafka
+  kafka-streams         Adds support for Kafka Streams
+  kotlin                Creates a Kotlin application
+  management            Adds support for management endpoints
+  micrometer            Adds support for Micrometer metrics
+  micrometer-atlas      Adds support for Micrometer metrics (w/ Atlas reporter)
+  micrometer-graphite   Adds support for Micrometer metrics (w/ Graphite reporter)
+  micrometer-prometheus  Adds support for Micrometer metrics (w/ Prometheus reporter)
+  micrometer-statsd     Adds support for Micrometer metrics (w/ Statsd reporter)
+  mongo-gorm            Configures GORM for MongoDB for Groovy applications
+  mongo-reactive        Adds support for the Mongo Reactive Streams Driver
+  neo4j-bolt            Adds support for the Neo4j Bolt Driver
+  neo4j-gorm            Configures GORM for Neo4j for Groovy applications
+  netflix-archaius      Adds support for Netflix Archaius in the application
+  netflix-hystrix       Adds support for Netflix Hystrix in the application
+  netflix-ribbon        Adds support for Netflix Ribbon in the application
+  picocli               Adds support for command line parsing (http://picocli.info)
+  postgres-reactive     Adds support for the Reactive Postgres driver in the application
+  rabbitmq              Adds support for RabbitMQ in the application
+  redis-lettuce         Configures the Lettuce driver for Redis
+  security-jwt          Adds support for JWT (JSON Web Token) based Authentication
+  security-session      Adds support for Session based Authentication
+  spek                  Adds support for the Spek testing framewokr
+  spock                 Adds support for the Spock testing framework
+  springloaded          Adds support for class reloading with Spring-Loaded
+  swagger-groovy        Configures Swagger (OpenAPI) Integration for Groovy
+  swagger-java          Configures Swagger (OpenAPI) Integration for Java
+  swagger-kotlin        Configures Swagger (OpenAPI) Integration for Kotlin
+  tracing-jaeger        Adds support for distributed tracing with Jaeger (https://www.jaegertracing.io)
+  tracing-zipkin        Adds support for distributed tracing with Zipkin (https://zipkin.io)
+----
+
+=== Creating and running a _hello galaxy_ (15 minutes)
+
+As explained avobe, the `create-app` command can be used to create new projects.
+It accepts some flags:
+
+.Create-App Flags
+|===
+|Flag|Description|Example
+
+|`build`
+|Build tool (one of `gradle`, `maven` - default is `gradle`)
+|`--build maven`
+
+|`profile`
+|Profile to use for the project (default is `service`)
+|`--profile function-aws`
+
+|`features`
+|Features to use for the project, comma-separated
+|`--features security-jwt,mongo-gorm`
+
+|`inplace`
+|If present, generates the project in the current directory (project name is optional if this flag is set)
+|`--inplace`
+|===
+
+icon:hand-o-right[] Let's create a _hello galaxy_ project:
+
+----
+$ mn create-app hello-galaxy
+| Generating Java project...
+| Application created at /Users/alvarosanchez/hello-galaxy
+----
+
+icon:hand-o-right[] Now, move into the generated `hello-galaxy` folder and let's 
+create a controller:
+
+----
+$ mn create-controller hello
+| Rendered template Controller.java to destination src/main/java/hello/galaxy/HelloController.java
+| Rendered template ControllerTest.java to destination src/test/java/hello/galaxy/HelloControllerTest.java
+----
+
+icon:hand-o-right[] Open the generated `HelloController.java` with your favourite 
+IDE and make it return "Hello Galaxy!":
+
+[source,java]
+----
+include::./ex01/solution/hello-galaxy/src/main/java/hello/galaxy/HelloController.java[tag=action,indent=0]
+----
+
+icon:hand-o-right[] Now, run the application:
+
+    $ ./gradlew run
+
+You will see a line similar to the following once the application has started
+
+    14:40:01.187 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 957ms. Server Running: http://localhost:8080
+
+icon:hand-o-right[] Then, on another shell, make a request to your service:
+
+----
+$ curl 0:8080/hello
+Hello Galaxy!
+----
+
+=== Write an automated test (5 minutes)
+
+While testing manually is acceptable in some situations, going forward it is 
+better to have automated tests to exercise our applications. Fortunately,
+Micronaut makes testing super easy!
+
+Micronaut applications can be tested with any testing framework, because
+`io.micronaut.context.ApplicationContext` is capable of spinning up embedded
+instances quite easily. The CLI adds support for using JUnit, Spock and Spek.
+
+For example, in _plain_ JUnit 4, this how a end-to-end functional test looks like:
+
+[source,java]
+----
+public class HelloWorldTest {
+    private static EmbeddedServer server;
+    private static HttpClient client;
+
+    @BeforeClass 
+    public static void setupServer() {
+        server = ApplicationContext.run(EmbeddedServer.class);
+        client = server.getApplicationContext().createBean(HttpClient.class, server.getURL());
+    }
+
+    @AfterClass 
+    public static void stopServer() {
+        if(server != null) { server.stop(); }
+        if(client != null) { client.stop(); }
+    }
+
+    @Test
+    public void testHelloWorkd() throws Exception {
+        String body = client.toBlocking().retrieve("/hello"); 
+        assertEquals(body, "Hello Galaxy!");
+    }
+}
+----
+
+In addition to that, if you are using JUnit 5 or Spock, there is special support that allows
+to remove most of the boilerplate about starting/stopping server and injecting beans. Check
+the https://micronaut-projects.github.io/micronaut-test/latest/guide/index.html[Micronaut Test]
+project for more information.
+
+icon:hand-o-right[] Micronaut Test is not (yet) included in the projects generated by the CLI,
+so let's add it. Modify `build.gradle` to remove `"junit:junit:4.12"` and `"org.hamcrest:hamcrest-all:1.3"`,
+and include:
+
+* `"org.junit.jupiter:junit-jupiter-engine:5.3.1"`
+* `"io.micronaut.test:micronaut-test-junit5:1.0.0.RC2"`
+
+Also, tell Gradle to use JUnit 5 Platform and display output:
+
+[source,java]
+----
+test {
+    useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+    }
+}
+----
+
+We will use Gradle to run the tests, however, if you want to run them from your IDE, make
+sure you enable annotation processors. For example, in Intellij IDEA:
+
+image::http://guides.micronaut.io/micronaut-data-access-jpa-hibernate/img/annotationprocessorsintellij.png[]
+
+icon:hand-o-right[] Now, change the generated `src/test/java/hello/galaxy/HelloControllerTest.java`
+to look like this:
+
+[source,java]
+----
+include::./ex01/solution/hello-galaxy/src/test/java/hello/galaxy/HelloControllerTest.java[]
+----
+
+As you can see, is much shorter than the previous version
+
+icon:hand-o-right[] Then, run the tests:
+
+    ./gradlew test
+
+Once finished, you should see an output similar to:
+
+    BUILD SUCCESSFUL in 5s
+
+== Creating the Clubs microservice (70 minutes)
+
+TIP: Change to the `ex02` directory to work on this exercise.
+
+icon:hand-o-right[] In this exercise we are creating the `clubs` microservice. Start with:
+
+----
+mn create-app --features hibernate-jpa clubs
+----
+
+And open it in your IDE.
+
+The `hibernate-jpa` will bring to the newly created project:
+
+* The required build dependencies to have Hibernate, a Tomcat-based JDBC connection pool 
+  and an H2 in-memory database (`build.gradle`).
+* The data source configuration to use such H2 database (`src/main/resources/application.yml`).
+
+icon:hand-o-right[] Check yourself the above files to see how it is configured.
+
+icon:hand-o-right[] Also, before going any further, repeat the steps in Exercise 1 to include
+Micronaut Test in this project
+
+=== JPA layer (15 minutes)
+
+Our model will reside in the `clubs.domain` package. We need to configure JPA to search for
+entities in this package.
+
+icon:hand-o-right[] Change `jpa` section of `src/main/resources/application.yml` so that it looks like:
+
+[source,yaml]
+----
+include::./ex02/solution/clubs/src/main/resources/application.yml[tags=jpa]
+----
+
+icon:hand-o-right[] Let's define first a `Club` entity under
+`src/main/java/clubs/domain/Club.java` with 2 string attributes:
+`name` (mandatory) and `stadium` (optional).
+
+icon:hand-o-right[] Next, define repository named `ClubRepository` as an interface with 
+the following operations:
+
+[source,java]
+----
+include::./ex02/solution/clubs/src/main/java/clubs/domain/ClubRepository.java[tag=operations,indent=0]
+----
+
+Now, let's write the implementation using JPA:
+
+[source,java]
+----
+include::./ex02/solution/clubs/src/main/java/clubs/domain/ClubRepositoryImpl.java[tag=class]
+----
+
+icon:hand-o-right[] Now, let's write a test for our implementation:
+
+[source,java]
+----
+include::./ex02/solution/clubs/src/test/java/clubs/ClubRepositoryImplTest.java[tag=test]
+----
+
+=== REST API (30 minutes)
+
+Micronaut helps you writing both the client and server sides of a REST API. In this service,
+we are going to create the following:
+
+ifdef::generate-diagrams[]
+[plantuml, clubs-diagram, png]
+....
+ClubsApi <<interface>>
+ClubsClient <<interface>>
+
+ClubsApi <|-- ClubsClient
+ClubsApi <|-- ClubController
+
+ClubsApi : @Get("/") List<Club> listClubs()
+ClubsApi : @Get("/{id}") Club show(@NotNull Long id)
+ClubsApi : @Post("/") Club save(@NotNull String name, String stadium)
+....
+endif::[]
+
+image::clubs-diagram.png[]
+
+icon:hand-o-right[] Create the `ClubsApi` interface, annotating its methods with 
+`io.micronaut.http.annotation.Get` or `io.micronaut.http.annotation.Post` as described in the diagram.
+
+icon:hand-o-right[] Then, create `ClubsClient` by simply extending from `ClubsApi`.
+Annotate the interface with `io.micronaut.http.client.Client("/")`.
+
+icon:hand-o-right[] Finally, implement the controller `ClubController`. Annotate
+the class with `io.micronaut.http.annotation.Controller("/")`, matching the path
+specified on `ClubsClient`. Use `ClubRepository` to implement the actions by declaring 
+a constructor dependency on it.
+
+WARNING: The controller actions need to be annotated with `@Get` / `@Post` again.
+
+icon:hand-o-right[] Finally, configure `logback.xml` to see some relevant output
+
+[source,xml]
+----
+include::./ex02/solution/clubs/src/main/resources/logback.xml[tag=!default]
+----
+<1> Debug level for our code
+<2> This allows to see the HTTP request and responses from the HTTP clients.
+
+icon:hand-o-right[] Once you have it, write an end-to-end test:
+
+[source,java]
+----
+include::./ex02/solution/clubs/src/test/java/clubs/ClubControllerTest.java[tag=test]
+----
+
+=== Load some data for production (15 minutes)
+
+During our tests, we have been seeding test data on demand, as it is a good
+practise to isolate test data from test to test. However, for production, we 
+want some data loaded
+
+icon:hand-o-right[] Let's create a bean to load some data. Run:
+
+    mn create-bean dataLoader
+
+icon:hand-o-right[] Change it to look like:
+
+[source,java]
+----
+include::./ex02/solution/clubs/src/main/java/clubs/init/DataLoader.java[tag=class]
+----
+
+icon:hand-o-right[] Now, run the application:
+
+    ./gradlew run
+
+icon:hand-o-right[] And make a request to `0:8080/` to see the results:
+
+=== Register the service in Consul (10 minutes)
+
+We want the `clubs` microservice to be discoverable by the `fixtures` service.
+So we will enable Micronaut's Consul support for service discovery.
+
+icon:hand-o-right[] First, add the neccessary dependency in `build.gradle`:
+
+[source,java]
+----
+include::./ex02/solution/clubs/build.gradle[tag=dep,indent=0]
+----
+
+icon:hand-o-right[] Then, change `src/main/resources/application.yml` to define
+the Consul configuration:
+
+[source,yaml]
+----
+include::./ex02/solution/clubs/src/main/resources/application.yml[tag=consul]
+----
+
+icon:hand-o-right[] Finally, run a Consul instance with Docker:
+
+    $ docker run -d --name=dev-consul -e CONSUL_BIND_INTERFACE=eth0 -e CONSUL_UI_BETA=true -p 8500:8500 consul
+
+icon:hand-o-right[] Now, if you run the application, you will see it registers
+with Consul at startup:
+
+----
+$ ./gradlew run
+...
+04:20:09.501 [nioEventLoopGroup-1-3] INFO  i.m.d.registration.AutoRegistration - Registered service [clubs] with Consul
+...
+----
+
+icon:hand-o-right[] If you go the http://localhost:8500/[Consul UI], you can see
+it shows as registered:
+
+image::consul.png[]
+
+icon:hand-o-right[] You can run yet another instance of `clubs` on a different
+shell, and see it registered. We will use them both with Micronaut's load-balanced
+HTTP client in the next exercise.
+
+== Creating the Fixtures microservice (70 minutes)
+
+TIP: Change to the `ex03` directory to work on this exercise.
+
+icon:hand-o-right[] In this exercise we are creating the `fixtures` microservice:
+
+    mn create-app --features=mongo-reactive,discovert-consul fixtures
+
+Once again, follow the steps of exercise 1 to add Micronaut Test to this project. Also,
+remove the `de.flapdoodle.embed.mongo` dependency, as we are using a Dockerized MongoDB 
+instance.
+
+=== Data layer (35 minutes)
+
+icon:hand-o-right[] First of all, run MongoDB with Docker:
+
+    $ docker run -d --name=dev-mongo -p 27017:27017 mongo
+
+icon:hand-o-right[] Then, create the `Fixture` domain class with the following properties:
+
+[source,java]
+----
+include::./ex03/solution/fixtures/src/main/java/fixtures/domain/Fixture.java[tag=fields,indent=0]
+----
+
+As you can see, we are only storing club's ids. When rendering fixture details,
+we will use Micronaut's HTTP client to fetch details from the `clubs` microservice.
+
+icon:hand-o-right[] We also need a constructor with annotations that allow `Fixture` instances to be marshalled and unmarshalled 
+to/from JSON and as a MongoDB document:
+
+[source,java]
+----
+include::./ex03/solution/fixtures/src/main/java/fixtures/domain/Fixture.java[tag=constructor,indent=0]
+----
+
+Be sure to add all the getter and setters as well.
+
+icon:hand-o-right[] The next thing we need is an HTTP client for the `clubs` microservice. Create one with:
+
+    $ mn create-client clubs
+
+Before actually mapping any endpoint, we are going to create the following hierarchy:
+
+ifdef::generate-diagrams[]
+[plantuml, clients-diagram, png]
+....
+ClubsApi <<interface>>
+ClubsClient <<interface>>
+
+ClubsApi <|-- ClubsClient
+ClubsApi <|-- ClubsClientMock
+
+ClubsApi : @Get("/{id}") Club show(Long id)
+....
+endif::[]
+
+image::clients-diagram.png[]
+
+* `ClubsApi` is the interface that contains the client endpoint mappings.
+* `ClubsClient` is the production client, is annotated with `@Client` and simply
+  extends from `ClubsApi`.
+* `ClubsClientMock` is a mocking client (resides within `src/test/java`), is annotated 
+  with `@Fallback`, and implements `ClubsApi` by returning hardcoded instances.
+
+This is how `ClubsApi` looks like:
+
+[source,java]
+----
+include::./ex03/solution/fixtures/src/main/java/fixtures/clubs/ClubsApi.java[tag=class]
+----
+
+We are using a reactive type in the HTTP client response, so that is a hint
+for Micronaut to make it non-blocking.
+
+Then, the production client:
+
+[source,java]
+----
+include::./ex03/solution/fixtures/src/main/java/fixtures/clubs/ClubsClient.java[tag=class]
+----
+<1> `"clubs"` is the Consul name for the Clubs microservice (which registers 
+    itself with the `micronaut.application.name` property).
+
+Finally, the mocking client:
+
+[source,java]
+----
+include::./ex03/solution/fixtures/src/test/java/fixtures/ClubsClientMock.java[tag=class]
+----
+
+icon:hand-o-right[] We also need a `Club` POJO to capture the JSON response from `clubs`. Define
+it with 2 string fields: `name` and `stadium`, and its constructor, getters, etc.
+
+icon:hand-o-right[] Now let's create a repository for `Fixture`. Following the same convention as
+in the previous exercise, begin with an interface:
+
+[source,java]
+----
+include::./ex03/solution/fixtures/src/main/java/fixtures/domain/FixtureRepository.java[tag=class,indent=0]
+----
+
+icon:hand-o-right[] Then, the implementation:
+
+[source,java]
+----
+include::./ex03/solution/fixtures/src/main/java/fixtures/domain/FixtureRepositoryImpl.java[tag=class,indent=0]
+----
+
+icon:hand-o-right[] And a test:
+
+[source,java]
+----
+include::./ex03/solution/fixtures/src/test/java/fixtures/FixtureRepositoryImplTest.java[tag=class,indent=0]
+----
+
+Make sure it passes.
+
+=== REST API (35 minutes)
+
+icon:hand-o-right[] Let's create a controller for displaying fixtures:
+
+    $ mn create-controller fixture
+
+As it was said earlier, our `Fixture` class doesn't store club names, but their id's (with the intention of
+having this microservice call the other). Therefore, we need a DTO class to represent what our JSON response
+is going to look like.
+
+icon:hand-o-right[] Create a POJO named `FixtureResponse` with the following attributes:
+
+[source,java]
+----
+include::./ex03/solution/fixtures/src/main/java/fixtures/controller/FixtureResponse.java[tag=fields,indent=0]
+----
+
+Now we need a service that transforms a `Fixture` into a `FixtureResponse`. To do so, it need to make
+2 HTTP calls to the `clubs` microservice, to get the name of each clubs. It will use `ClubsClient` for that.
+
+icon:hand-o-right[] Create a `FixtureService` like this:
+
+[source,java]
+----
+include::./ex03/solution/fixtures/src/main/java/fixtures/service/FixtureService.java[tag=class]
+----
+
+icon:hand-o-right[] And write a test for it:
+
+[source,java]
+----
+include::./ex03/solution/fixtures/src/test/java/fixtures/FixtureServiceTest.java[tag=class]
+----
+
+Finally, we need the REST controller that connect the dots.
+
+icon:hand-o-right[] Create a `FixtureController` that uses `FixtureRepository` and `FixtureService` as
+collaborators to produce a `Flowable<FixtureResponse>` response:
+
+[source,java]
+----
+include::./ex03/solution/fixtures/src/main/java/fixtures/controller/FixtureController.java[tag=action,indent=0]
+----
+
+=== Load some data and run the application (10 minutes)
+
+icon:hand-o-right[] Similarly to the previous exercise, seed the application with some data.
+
+Also, we need to set the `micronaut.server.port` configuration property a value other than 8080,
+otherwise, we won't be able to run both services.
+
+icon:hand-o-right[] In `application.yml`, set `micronaut.server.port` to `80801`
+
+
+icon:hand-o-right[] Now, run the application:
+
+    ./gradlew run
+
+If you make a request to the default controller, and the `clubs` microservice is not running,
+you will see an error:
+
+----
+{"message":"Internal Server Error: No available services for ID: clubs"}
+----
+
+icon:hand-o-right[] Now, run the `clubs` service on a different terminal, and try the request again.

@@ -1,0 +1,63 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.4"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.5.RELEASE"
+    }
+}
+
+version "0.1"
+group "fixtures"
+
+apply plugin:"io.spring.dependency-management"
+apply plugin:"com.github.johnrengelman.shadow"
+apply plugin:"application"
+apply plugin:"groovy"
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://jcenter.bintray.com" }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.micronaut:bom:1.0.0.M3'
+    }
+}
+
+dependencies {
+    compile "io.micronaut:http-client"
+    compile "io.micronaut:http-server-netty"
+    compile "io.micronaut:runtime-groovy"
+    compile "io.micronaut.configuration:mongo-gorm"
+    compile "io.micronaut:discovery-client"
+
+    compileOnly "io.micronaut:inject-groovy"
+
+    runtime "ch.qos.logback:logback-classic:1.2.3"
+
+    testCompile "io.micronaut:inject-groovy"
+    testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
+        exclude group: "org.codehaus.groovy", module: "groovy-all"
+    }
+    testCompile "de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.0.1"
+}
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1')
+
+mainClassName = "fixtures.Application"
+
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
