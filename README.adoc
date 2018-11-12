@@ -75,8 +75,8 @@ endif::[]
 
 image::football-diagram.png[]
 
-* `clubs` is the microservice responsible for managing clubs. It uses GORM for
-  Hibernate as a data access layer.
+* `clubs` is the microservice responsible for managing clubs. It uses Hibernate 
+  as a data access layer.
 * `fixtures` manages all game fixtures, storing its data in MongoDB. For the 
   teams playing in a game, it doesn't store their full details, but rather their 
   ID. It has a service-discovery-enabled HTTP client to fetch club details from 
