@@ -1,5 +1,0 @@
-profile: service
-defaultPackage: fixtures
----
-testFramework: junit
-sourceLanguage: java

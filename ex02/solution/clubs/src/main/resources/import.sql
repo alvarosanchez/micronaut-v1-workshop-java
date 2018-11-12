@@ -1,1 +1,0 @@
-insert into club (id, name, stadium) values (1, "Leganes", "Butarque")

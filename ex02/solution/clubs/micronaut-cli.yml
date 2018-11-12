@@ -1,5 +1,0 @@
-profile: service
-defaultPackage: clubs
----
-testFramework: junit
-sourceLanguage: java

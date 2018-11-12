@@ -1,11 +1,5 @@
 .asciidoctor/
-.gradle/
-build/
-.classpath
-.project
-.settings/
-bin/
-.idea/
-*.iml
-out/
 .vscode/
+ex01/
+ex02/
+ex03/

@@ -1,5 +1,0 @@
-profile: service
-defaultPackage: hello.galaxy
----
-testFramework: junit
-sourceLanguage: java
