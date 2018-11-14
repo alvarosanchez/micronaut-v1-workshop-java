@@ -530,7 +530,7 @@ TIP: Change to the `ex03` directory to work on this exercise.
 
 icon:hand-o-right[] In this exercise we are creating the `fixtures` microservice:
 
-    mn create-app --features=mongo-reactive,discovert-consul fixtures
+    mn create-app --features=mongo-reactive,discovery-consul fixtures
 
 Once again, follow the steps of exercise 1 to add Micronaut Test to this project. Also,
 remove the `de.flapdoodle.embed.mongo` dependency, as we are using a Dockerized MongoDB 
