@@ -127,6 +127,9 @@ dependencies to the build, more files to the project skeleton, etc.
 icon:hand-o-right[] To see all the features of a profile, you can
 use the `profile-info` command:
 
++++ <details><summary> +++
+Click to expand
++++ </summary><div> +++
 ----
 $ mn profile-info service                                                                                
 | Profile: service
@@ -194,6 +197,7 @@ The service profile
   tracing-jaeger        Adds support for distributed tracing with Jaeger (https://www.jaegertracing.io)
   tracing-zipkin        Adds support for distributed tracing with Zipkin (https://zipkin.io)
 ----
++++ </div></details> +++
 
 === Creating and running a _hello galaxy_ (15 minutes)
 
