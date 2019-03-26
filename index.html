@@ -935,6 +935,11 @@ instances quite easily. The CLI adds support for using JUnit, Spock and Spek.</p
 <div class="paragraph">
 <p>For example, in <em>plain</em> JUnit 4, this how a end-to-end functional test looks like:</p>
 </div>
+<div class="paragraph">
+<p> <details><summary> 
+Click to expand
+ </summary><div> </p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="java"><span></span><span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">HelloWorldTest</span> <span class="tok-o">{</span>
@@ -960,6 +965,9 @@ instances quite easily. The CLI adds support for using JUnit, Spock and Spek.</p
     <span class="tok-o">}</span>
 <span class="tok-o">}</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p> </div></details> </p>
 </div>
 <div class="paragraph">
 <p>In addition to that, if you are using JUnit 5 or Spock, there is special support that allows
@@ -1008,6 +1016,11 @@ sure you enable annotation processors. For example, in Intellij IDEA:</p>
 <p><span class="icon"><i class="fa fa-hand-o-right"></i></span> Now, change the generated <code>src/test/java/hello/galaxy/HelloControllerTest.java</code>
 to look like this:</p>
 </div>
+<div class="paragraph">
+<p> <details><summary> 
+Click to expand
+ </summary><div> </p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="java"><span></span><span class="tok-kn">package</span> <span class="tok-nn">hello.galaxy</span><span class="tok-o">;</span>
@@ -1036,6 +1049,9 @@ to look like this:</p>
 
 <span class="tok-o">}</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p> </div></details> </p>
 </div>
 <div class="paragraph">
 <p>As you can see, is much shorter than the previous version</p>
@@ -1148,6 +1164,11 @@ the following operations:</p>
 <div class="paragraph">
 <p>Now, let&#8217;s write the implementation using JPA:</p>
 </div>
+<div class="paragraph">
+<p> <details><summary> 
+Click to expand
+ </summary><div> </p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="java"><span></span><span class="tok-nd">@Singleton</span>
@@ -1187,7 +1208,15 @@ the following operations:</p>
 </div>
 </div>
 <div class="paragraph">
+<p> </div></details> </p>
+</div>
+<div class="paragraph">
 <p><span class="icon"><i class="fa fa-hand-o-right"></i></span> Now, let&#8217;s write a test for our implementation:</p>
+</div>
+<div class="paragraph">
+<p> <details><summary> 
+Click to expand
+ </summary><div> </p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1216,6 +1245,9 @@ the following operations:</p>
 
 <span class="tok-o">}</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p> </div></details> </p>
 </div>
 </div>
 <div class="sect2">
@@ -1285,6 +1317,11 @@ The controller actions need to be annotated with <code>@Get</code> / <code>@Post
 <div class="paragraph">
 <p><span class="icon"><i class="fa fa-hand-o-right"></i></span> Once you have it, write an end-to-end test:</p>
 </div>
+<div class="paragraph">
+<p> <details><summary> 
+Click to expand
+ </summary><div> </p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="java"><span></span><span class="tok-nd">@MicronautTest</span>
@@ -1311,6 +1348,9 @@ The controller actions need to be annotated with <code>@Get</code> / <code>@Post
 <span class="tok-o">}</span></code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p> </div></details> </p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_load_some_data_for_production_15_minutes">2.3. Load some data for production (15 minutes)</h3>
@@ -1329,6 +1369,11 @@ want some data loaded</p>
 </div>
 <div class="paragraph">
 <p><span class="icon"><i class="fa fa-hand-o-right"></i></span> Change it to look like:</p>
+</div>
+<div class="paragraph">
+<p> <details><summary> 
+Click to expand
+ </summary><div> </p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1353,6 +1398,9 @@ want some data loaded</p>
     <span class="tok-o">}</span>
 <span class="tok-o">}</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p> </div></details> </p>
 </div>
 <div class="paragraph">
 <p><span class="icon"><i class="fa fa-hand-o-right"></i></span> Now, run the application:</p>
@@ -1620,6 +1668,11 @@ in the previous exercise, begin with an interface:</p>
 <div class="paragraph">
 <p><span class="icon"><i class="fa fa-hand-o-right"></i></span> Then, the implementation:</p>
 </div>
+<div class="paragraph">
+<p> <details><summary> 
+Click to expand
+ </summary><div> </p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="java"><span></span><span class="tok-nd">@Singleton</span>
@@ -1657,7 +1710,15 @@ in the previous exercise, begin with an interface:</p>
 </div>
 </div>
 <div class="paragraph">
+<p> </div></details> </p>
+</div>
+<div class="paragraph">
 <p><span class="icon"><i class="fa fa-hand-o-right"></i></span> And a test:</p>
+</div>
+<div class="paragraph">
+<p> <details><summary> 
+Click to expand
+ </summary><div> </p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1686,6 +1747,9 @@ in the previous exercise, begin with an interface:</p>
     <span class="tok-o">}</span>
 <span class="tok-o">}</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p> </div></details> </p>
 </div>
 <div class="paragraph">
 <p>Make sure it passes.</p>
@@ -1729,6 +1793,11 @@ is going to look like.</p>
 <div class="paragraph">
 <p><span class="icon"><i class="fa fa-hand-o-right"></i></span> Create a <code>FixtureService</code> like this:</p>
 </div>
+<div class="paragraph">
+<p> <details><summary> 
+Click to expand
+ </summary><div> </p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="java"><span></span><span class="tok-nd">@Singleton</span>
@@ -1756,7 +1825,15 @@ is going to look like.</p>
 </div>
 </div>
 <div class="paragraph">
+<p> </div></details> </p>
+</div>
+<div class="paragraph">
 <p><span class="icon"><i class="fa fa-hand-o-right"></i></span> And write a test for it:</p>
+</div>
+<div class="paragraph">
+<p> <details><summary> 
+Click to expand
+ </summary><div> </p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1788,6 +1865,9 @@ is going to look like.</p>
 
 <span class="tok-o">}</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p> </div></details> </p>
 </div>
 <div class="paragraph">
 <p>Finally, we need the REST controller that connect the dots.</p>
@@ -1843,7 +1923,7 @@ you will see an error:</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-03-26 22:53:54 CET
+Last updated 2019-03-26 23:05:35 CET
 </div>
 </div>
 </body>
