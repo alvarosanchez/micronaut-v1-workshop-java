@@ -28,7 +28,6 @@ public class FixtureRepositoryImpl implements FixtureRepository {
 
     @Override
     public Flowable<Fixture> findAll() {
-
         return Flowable.fromPublisher(getCollection().find());
     }
 
