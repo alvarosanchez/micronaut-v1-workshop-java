@@ -277,6 +277,9 @@ instances quite easily. The CLI adds support for using JUnit, Spock and Spek.
 
 For example, in _plain_ JUnit 4, this how a end-to-end functional test looks like:
 
++++ <details><summary> +++
+Click to expand
++++ </summary><div> +++
 [source,java]
 ----
 public class HelloWorldTest {
@@ -302,6 +305,7 @@ public class HelloWorldTest {
     }
 }
 ----
++++ </div></details> +++
 
 In addition to that, if you are using JUnit 5 or Spock, there is special support that allows
 to remove most of the boilerplate about starting/stopping server and injecting beans. Check
@@ -335,10 +339,14 @@ image::http://guides.micronaut.io/micronaut-data-access-jpa-hibernate/img/annota
 icon:hand-o-right[] Now, change the generated `src/test/java/hello/galaxy/HelloControllerTest.java`
 to look like this:
 
++++ <details><summary> +++
+Click to expand
++++ </summary><div> +++
 [source,java]
 ----
 include::./ex01/solution/hello-galaxy/src/test/java/hello/galaxy/HelloControllerTest.java[]
 ----
++++ </div></details> +++
 
 As you can see, is much shorter than the previous version
 
@@ -399,17 +407,25 @@ include::./ex02/solution/clubs/src/main/java/clubs/domain/ClubRepository.java[ta
 
 Now, let's write the implementation using JPA:
 
++++ <details><summary> +++
+Click to expand
++++ </summary><div> +++
 [source,java]
 ----
 include::./ex02/solution/clubs/src/main/java/clubs/domain/ClubRepositoryImpl.java[tag=class]
 ----
++++ </div></details> +++
 
 icon:hand-o-right[] Now, let's write a test for our implementation:
 
++++ <details><summary> +++
+Click to expand
++++ </summary><div> +++
 [source,java]
 ----
 include::./ex02/solution/clubs/src/test/java/clubs/ClubRepositoryImplTest.java[tag=test]
 ----
++++ </div></details> +++
 
 === REST API (30 minutes)
 
@@ -457,10 +473,14 @@ include::./ex02/solution/clubs/src/main/resources/logback.xml[tag=!default]
 
 icon:hand-o-right[] Once you have it, write an end-to-end test:
 
++++ <details><summary> +++
+Click to expand
++++ </summary><div> +++
 [source,java]
 ----
 include::./ex02/solution/clubs/src/test/java/clubs/ClubControllerTest.java[tag=test]
 ----
++++ </div></details> +++
 
 === Load some data for production (15 minutes)
 
@@ -474,10 +494,14 @@ icon:hand-o-right[] Let's create a bean to load some data. Run:
 
 icon:hand-o-right[] Change it to look like:
 
++++ <details><summary> +++
+Click to expand
++++ </summary><div> +++
 [source,java]
 ----
 include::./ex02/solution/clubs/src/main/java/clubs/init/DataLoader.java[tag=class]
 ----
++++ </div></details> +++
 
 icon:hand-o-right[] Now, run the application:
 
@@ -632,17 +656,25 @@ include::./ex03/solution/fixtures/src/main/java/fixtures/domain/FixtureRepositor
 
 icon:hand-o-right[] Then, the implementation:
 
++++ <details><summary> +++
+Click to expand
++++ </summary><div> +++
 [source,java]
 ----
 include::./ex03/solution/fixtures/src/main/java/fixtures/domain/FixtureRepositoryImpl.java[tag=class,indent=0]
 ----
++++ </div></details> +++
 
 icon:hand-o-right[] And a test:
 
++++ <details><summary> +++
+Click to expand
++++ </summary><div> +++
 [source,java]
 ----
 include::./ex03/solution/fixtures/src/test/java/fixtures/FixtureRepositoryImplTest.java[tag=class,indent=0]
 ----
++++ </div></details> +++
 
 Make sure it passes.
 
@@ -668,17 +700,25 @@ Now we need a service that transforms a `Fixture` into a `FixtureResponse`. To d
 
 icon:hand-o-right[] Create a `FixtureService` like this:
 
++++ <details><summary> +++
+Click to expand
++++ </summary><div> +++
 [source,java]
 ----
 include::./ex03/solution/fixtures/src/main/java/fixtures/service/FixtureService.java[tag=class]
 ----
++++ </div></details> +++
 
 icon:hand-o-right[] And write a test for it:
 
++++ <details><summary> +++
+Click to expand
++++ </summary><div> +++
 [source,java]
 ----
 include::./ex03/solution/fixtures/src/test/java/fixtures/FixtureServiceTest.java[tag=class]
 ----
++++ </div></details> +++
 
 Finally, we need the REST controller that connect the dots.
 
