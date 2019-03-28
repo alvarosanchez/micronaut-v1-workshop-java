@@ -1150,6 +1150,10 @@ entities in this package.</p>
 <code>name</code> (mandatory) and <code>stadium</code> (optional).</p>
 </div>
 <div class="paragraph">
+<p>You need to use JPA annotations on the entity such as <code>@Entity</code> and <code>@Id</code>. If you are not familiar with JPA,
+check the solution file.</p>
+</div>
+<div class="paragraph">
 <p><span class="icon"><i class="fa fa-hand-o-right"></i></span> Next, define repository named <code>ClubRepository</code> as an interface with
 the following operations:</p>
 </div>
@@ -1473,7 +1477,18 @@ it shows as registered:</p>
 </div>
 <div class="paragraph">
 <p><span class="icon"><i class="fa fa-hand-o-right"></i></span> You can run yet another instance of <code>clubs</code> on a different
-shell, and see it registered. We will use them both with Micronaut&#8217;s load-balanced
+shell, and see it registered. In order to do that, you need to tell Micronaut to
+run on a random port. In <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="yaml"><span></span><span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">micronaut</span><span class="tok-p tok-p-Indicator">:</span>
+    <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">server</span><span class="tok-p tok-p-Indicator">:</span>
+        <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">port</span><span class="tok-p tok-p-Indicator">:</span> <span class="tok-l tok-l-Scalar tok-l-Scalar-Plain">-1</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We will use them both with Micronaut&#8217;s load-balanced
 HTTP client in the next exercise.</p>
 </div>
 </div>
@@ -1922,7 +1937,7 @@ you will see an error:</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-03-26 23:46:02 CET
+Last updated 2019-03-28 11:24:18 CET
 </div>
 </div>
 </body>
