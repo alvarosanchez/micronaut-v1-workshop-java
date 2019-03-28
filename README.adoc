@@ -430,6 +430,11 @@ include::./ex02/solution/clubs/src/test/java/clubs/ClubRepositoryImplTest.java[t
 ----
 +++ </div></details> +++
 
+WARNING: for package-scanning reasons, you need to ensure your test classes are located at
+the top of the package hierarchy, so that Micronaut can find annotations in packages underneath.
+In this exercise, place your tests in the `clubs` package and make sure there are no classes
+outside of it.
+
 === REST API (30 minutes)
 
 Micronaut helps you writing both the client and server sides of a REST API. In this service,
