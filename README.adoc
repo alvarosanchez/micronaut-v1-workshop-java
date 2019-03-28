@@ -397,6 +397,9 @@ icon:hand-o-right[] Let's define first a `Club` entity under
 `src/main/java/clubs/domain/Club.java` with 2 string attributes:
 `name` (mandatory) and `stadium` (optional).
 
+You need to use JPA annotations on the entity such as `@Entity` and `@Id`. If you are not familiar with JPA,
+check the solution file.
+
 icon:hand-o-right[] Next, define repository named `ClubRepository` as an interface with 
 the following operations:
 
@@ -549,7 +552,15 @@ it shows as registered:
 image::consul.png[]
 
 icon:hand-o-right[] You can run yet another instance of `clubs` on a different
-shell, and see it registered. We will use them both with Micronaut's load-balanced
+shell, and see it registered. In order to do that, you need to tell Micronaut to
+run on a random port. In `application.yml`:
+
+[source,yaml]
+----
+include::./ex02/solution/clubs/src/main/resources/application.yml[tag=random-port]
+----
+
+We will use them both with Micronaut's load-balanced
 HTTP client in the next exercise.
 
 == Creating the Fixtures microservice (70 minutes)
