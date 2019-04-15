@@ -620,7 +620,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="literalblock">
 <div class="content">
 <pre>$ mn --version
-| Micronaut Version: 1.0.4
+| Micronaut Version: 1.1.0
 | JVM Version: 1.8.0_191</pre>
 </div>
 </div>
@@ -720,12 +720,16 @@ the <code>create-controller</code> and <code>create-client</code> commands.</p>
 <pre>$ mn list-profiles
 | Available Profiles
 --------------------
-  cli           The cli profile
-  federation    The federation profile
-  function-aws  The function profile for AWS Lambda
-  kafka         The Kafka messaging profile
-  profile       A profile for creating new Micronaut profiles
-  service       The service profile</pre>
+  cli                 The cli profile
+  configuration       The profile for creating the configuration
+  federation          The federation profile
+  function-aws        The function profile for AWS Lambda
+  function-aws-alexa  The function profile for AWS Lambda
+  grpc                Profile for Creating GRPC Services
+  kafka               The Kafka messaging profile
+  profile             A profile for creating new Micronaut profiles
+  rabbitmq            The RabbitMQ messaging profile
+  service             The service profile</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -758,6 +762,7 @@ The service profile
   create-client         Creates a client interface
   create-controller     Creates a controller and associated test
   create-job            Creates a job with scheduled method
+  create-test           Creates a simple test for the project's testing framework
   create-websocket-client  Creates a Websocket client
   create-websocket-server  Creates a Websocket server
   help                  Prints help information for a specific command
@@ -765,11 +770,18 @@ The service profile
 | Provided Features:
 --------------------
   annotation-api        Adds Java annotation API
+  application           Facilitates creating an executable JVM application and adds support for creating fat/uber JARs
+  aws-api-gateway       Adds support for AWS API Gateway
+  aws-api-gateway-graal  Creates an AWS API Gateway Proxy Lambda with Graal Native Image
   cassandra             Adds support for Cassandra in the application
   config-consul         Adds support for Distributed Configuration with Consul (https://www.consul.io)
   discovery-consul      Adds support for Service Discovery with Consul (https://www.consul.io)
   discovery-eureka      Adds support for Service Discovery with Eureka
+  elasticsearch         Adds support for Elasticsearch in the application
+  file-watch            Adds automatic restarts and file watch
+  flyway                Adds support for Flyway database migrations (https://flywaydb.org/)
   graal-native-image    Allows Building a Native Image
+  graphql               Adds support for GraphQL in the application
   groovy                Creates a Groovy application
   hibernate-gorm        Adds support for GORM persistence framework
   hibernate-jpa         Adds support for Hibernate/JPA
@@ -781,13 +793,16 @@ The service profile
   jdbc-tomcat           Configures SQL DataSource instances using Tomcat Connection Pool
   jib                   Adds support for Jib builds
   jrebel                Adds support for class reloading with JRebel (requires separate JRebel installation)
-  junit                 Adds support for the JUnit testing framework
+  junit                 Adds support for the JUnit 5 testing framework
   kafka                 Adds support for Kafka
   kafka-streams         Adds support for Kafka Streams
   kotlin                Creates a Kotlin application
+  liquibase             Adds support for Liquibase database migrations (http://www.liquibase.org/)
+  logback               Adds Logback Logging
   management            Adds support for management endpoints
   micrometer            Adds support for Micrometer metrics
   micrometer-atlas      Adds support for Micrometer metrics (w/ Atlas reporter)
+  micrometer-cloudwatch  Adds support for Micrometer metrics (w/ AWS Cloudwatch reporter)
   micrometer-graphite   Adds support for Micrometer metrics (w/ Graphite reporter)
   micrometer-prometheus  Adds support for Micrometer metrics (w/ Prometheus reporter)
   micrometer-statsd     Adds support for Micrometer metrics (w/ Statsd reporter)
@@ -933,75 +948,10 @@ Micronaut makes testing super easy!</p>
 instances quite easily. The CLI adds support for using JUnit, Spock and Spek.</p>
 </div>
 <div class="paragraph">
-<p>For example, in <em>plain</em> JUnit 4, this how a end-to-end functional test looks like:</p>
-</div>
-<div class="paragraph">
-<p> <details><summary> 
-Click to expand
- </summary><div> </p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="java"><span></span><span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">HelloWorldTest</span> <span class="tok-o">{</span>
-    <span class="tok-kd">private</span> <span class="tok-kd">static</span> <span class="tok-n">EmbeddedServer</span> <span class="tok-n">server</span><span class="tok-o">;</span>
-    <span class="tok-kd">private</span> <span class="tok-kd">static</span> <span class="tok-n">HttpClient</span> <span class="tok-n">client</span><span class="tok-o">;</span>
-
-    <span class="tok-nd">@BeforeClass</span>
-    <span class="tok-kd">public</span> <span class="tok-kd">static</span> <span class="tok-kt">void</span> <span class="tok-nf">setupServer</span><span class="tok-o">()</span> <span class="tok-o">{</span>
-        <span class="tok-n">server</span> <span class="tok-o">=</span> <span class="tok-n">ApplicationContext</span><span class="tok-o">.</span><span class="tok-na">run</span><span class="tok-o">(</span><span class="tok-n">EmbeddedServer</span><span class="tok-o">.</span><span class="tok-na">class</span><span class="tok-o">);</span>
-        <span class="tok-n">client</span> <span class="tok-o">=</span> <span class="tok-n">server</span><span class="tok-o">.</span><span class="tok-na">getApplicationContext</span><span class="tok-o">().</span><span class="tok-na">createBean</span><span class="tok-o">(</span><span class="tok-n">HttpClient</span><span class="tok-o">.</span><span class="tok-na">class</span><span class="tok-o">,</span> <span class="tok-n">server</span><span class="tok-o">.</span><span class="tok-na">getURL</span><span class="tok-o">());</span>
-    <span class="tok-o">}</span>
-
-    <span class="tok-nd">@AfterClass</span>
-    <span class="tok-kd">public</span> <span class="tok-kd">static</span> <span class="tok-kt">void</span> <span class="tok-nf">stopServer</span><span class="tok-o">()</span> <span class="tok-o">{</span>
-        <span class="tok-k">if</span><span class="tok-o">(</span><span class="tok-n">server</span> <span class="tok-o">!=</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span> <span class="tok-n">server</span><span class="tok-o">.</span><span class="tok-na">stop</span><span class="tok-o">();</span> <span class="tok-o">}</span>
-        <span class="tok-k">if</span><span class="tok-o">(</span><span class="tok-n">client</span> <span class="tok-o">!=</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span> <span class="tok-n">client</span><span class="tok-o">.</span><span class="tok-na">stop</span><span class="tok-o">();</span> <span class="tok-o">}</span>
-    <span class="tok-o">}</span>
-
-    <span class="tok-nd">@Test</span>
-    <span class="tok-kd">public</span> <span class="tok-kt">void</span> <span class="tok-nf">testHelloWorkd</span><span class="tok-o">()</span> <span class="tok-kd">throws</span> <span class="tok-n">Exception</span> <span class="tok-o">{</span>
-        <span class="tok-n">String</span> <span class="tok-n">body</span> <span class="tok-o">=</span> <span class="tok-n">client</span><span class="tok-o">.</span><span class="tok-na">toBlocking</span><span class="tok-o">().</span><span class="tok-na">retrieve</span><span class="tok-o">(</span><span class="tok-s">&quot;/hello&quot;</span><span class="tok-o">);</span>
-        <span class="tok-n">assertEquals</span><span class="tok-o">(</span><span class="tok-n">body</span><span class="tok-o">,</span> <span class="tok-s">&quot;Hello Galaxy!&quot;</span><span class="tok-o">);</span>
-    <span class="tok-o">}</span>
-<span class="tok-o">}</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p> </div></details> </p>
-</div>
-<div class="paragraph">
 <p>In addition to that, if you are using JUnit 5 or Spock, there is special support that allows
 to remove most of the boilerplate about starting/stopping server and injecting beans. Check
 the <a href="https://micronaut-projects.github.io/micronaut-test/latest/guide/index.html">Micronaut Test</a>
 project for more information.</p>
-</div>
-<div class="paragraph">
-<p><span class="icon"><i class="fa fa-hand-o-right"></i></span> Micronaut Test is not (yet) included in the 1.0.x projects generated by the CLI,
-so let&#8217;s add it. Modify <code>build.gradle</code> to remove <code>"junit:junit:4.12"</code> and <code>"org.hamcrest:hamcrest-all:1.3"</code>,
-and include:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>"org.junit.jupiter:junit-jupiter-engine:5.3.1"</code></p>
-</li>
-<li>
-<p><code>"io.micronaut.test:micronaut-test-junit5:1.0.2"</code></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Also, tell Gradle to use JUnit 5 Platform and display output:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="java"><span></span><span class="tok-n">test</span> <span class="tok-o">{</span>
-    <span class="tok-n">useJUnitPlatform</span><span class="tok-o">()</span>
-    <span class="tok-n">testLogging</span> <span class="tok-o">{</span>
-        <span class="tok-n">showStandardStreams</span> <span class="tok-o">=</span> <span class="tok-kc">true</span>
-    <span class="tok-o">}</span>
-<span class="tok-o">}</span></code></pre>
-</div>
 </div>
 <div class="paragraph">
 <p>We will use Gradle to run the tests, however, if you want to run them from your IDE, make
@@ -1052,9 +1002,6 @@ Click to expand
 </div>
 <div class="paragraph">
 <p> </div></details> </p>
-</div>
-<div class="paragraph">
-<p>As you can see, is much shorter than the previous version</p>
 </div>
 <div class="paragraph">
 <p><span class="icon"><i class="fa fa-hand-o-right"></i></span> Then, run the tests:</p>
@@ -1952,7 +1899,7 @@ you will see an error:</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-03-28 11:38:02 CET
+Last updated 2019-04-15 11:48:11 CEST
 </div>
 </div>
 </body>
