@@ -332,16 +332,13 @@ mn create-app --features hibernate-jpa clubs
 
 And open it in your IDE.
 
-The `hibernate-jpa` will bring to the newly created project:
+The `hibernate-jpa` feature will bring to the newly created project:
 
 * The required build dependencies to have Hibernate, a Tomcat-based JDBC connection pool 
   and an H2 in-memory database (`build.gradle`).
 * The data source configuration to use such H2 database (`src/main/resources/application.yml`).
 
 icon:hand-o-right[] Check yourself the above files to see how it is configured.
-
-icon:hand-o-right[] Also, before going any further, repeat the steps in Exercise 1 to include
-Micronaut Test in this project
 
 === JPA layer (15 minutes)
 
@@ -392,7 +389,7 @@ include::./ex02/solution/clubs/src/test/java/clubs/ClubRepositoryImplTest.java[t
 ----
 +++ </div></details> +++
 
-WARNING: for package-scanning reasons, you need to ensure your test classes are located at
+WARNING: For package-scanning reasons, you need to ensure your test classes are located at
 the top of the package hierarchy, so that Micronaut can find annotations in packages underneath.
 In this exercise, place your tests in the `clubs` package and make sure there are no classes
 outside of it.

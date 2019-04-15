@@ -6,7 +6,6 @@ import clubs.domain.Club;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.validation.Validated;
 
-import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 

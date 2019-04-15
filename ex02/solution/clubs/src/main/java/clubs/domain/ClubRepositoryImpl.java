@@ -1,7 +1,5 @@
 package clubs.domain;
 
-import io.micronaut.context.annotation.Primary;
-import io.micronaut.context.annotation.Replaces;
 import io.micronaut.spring.tx.annotation.Transactional;
 
 import javax.inject.Singleton;
