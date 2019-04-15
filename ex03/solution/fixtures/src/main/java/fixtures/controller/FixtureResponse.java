@@ -1,7 +1,5 @@
 package fixtures.controller;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-
 import java.util.Date;
 
 public class FixtureResponse {
