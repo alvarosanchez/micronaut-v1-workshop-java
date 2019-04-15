@@ -36,7 +36,7 @@ In order to do this workshop, you need the following:
 3. Ensure the CLI is installed properly:
 
     $ mn --version
-    | Micronaut Version: 1.0.4
+    | Micronaut Version: 1.1.0
     | JVM Version: 1.8.0_191
 
 === Clone this repository
@@ -109,12 +109,16 @@ icon:hand-o-right[] You can list the available profiles with the `list-profiles`
 $ mn list-profiles
 | Available Profiles
 --------------------
-  cli           The cli profile
-  federation    The federation profile
-  function-aws  The function profile for AWS Lambda
-  kafka         The Kafka messaging profile
-  profile       A profile for creating new Micronaut profiles
-  service       The service profile
+  cli                 The cli profile
+  configuration       The profile for creating the configuration
+  federation          The federation profile
+  function-aws        The function profile for AWS Lambda
+  function-aws-alexa  The function profile for AWS Lambda
+  grpc                Profile for Creating GRPC Services
+  kafka               The Kafka messaging profile
+  profile             A profile for creating new Micronaut profiles
+  rabbitmq            The RabbitMQ messaging profile
+  service             The service profile
 ----
 
 
@@ -142,6 +146,7 @@ The service profile
   create-client         Creates a client interface
   create-controller     Creates a controller and associated test
   create-job            Creates a job with scheduled method
+  create-test           Creates a simple test for the project's testing framework
   create-websocket-client  Creates a Websocket client
   create-websocket-server  Creates a Websocket server
   help                  Prints help information for a specific command
@@ -149,11 +154,18 @@ The service profile
 | Provided Features:
 --------------------
   annotation-api        Adds Java annotation API
+  application           Facilitates creating an executable JVM application and adds support for creating fat/uber JARs
+  aws-api-gateway       Adds support for AWS API Gateway
+  aws-api-gateway-graal  Creates an AWS API Gateway Proxy Lambda with Graal Native Image
   cassandra             Adds support for Cassandra in the application
   config-consul         Adds support for Distributed Configuration with Consul (https://www.consul.io)
   discovery-consul      Adds support for Service Discovery with Consul (https://www.consul.io)
   discovery-eureka      Adds support for Service Discovery with Eureka
+  elasticsearch         Adds support for Elasticsearch in the application
+  file-watch            Adds automatic restarts and file watch
+  flyway                Adds support for Flyway database migrations (https://flywaydb.org/)
   graal-native-image    Allows Building a Native Image
+  graphql               Adds support for GraphQL in the application
   groovy                Creates a Groovy application
   hibernate-gorm        Adds support for GORM persistence framework
   hibernate-jpa         Adds support for Hibernate/JPA
@@ -165,13 +177,16 @@ The service profile
   jdbc-tomcat           Configures SQL DataSource instances using Tomcat Connection Pool
   jib                   Adds support for Jib builds
   jrebel                Adds support for class reloading with JRebel (requires separate JRebel installation)
-  junit                 Adds support for the JUnit testing framework
+  junit                 Adds support for the JUnit 5 testing framework
   kafka                 Adds support for Kafka
   kafka-streams         Adds support for Kafka Streams
   kotlin                Creates a Kotlin application
+  liquibase             Adds support for Liquibase database migrations (http://www.liquibase.org/)
+  logback               Adds Logback Logging
   management            Adds support for management endpoints
   micrometer            Adds support for Micrometer metrics
   micrometer-atlas      Adds support for Micrometer metrics (w/ Atlas reporter)
+  micrometer-cloudwatch  Adds support for Micrometer metrics (w/ AWS Cloudwatch reporter)
   micrometer-graphite   Adds support for Micrometer metrics (w/ Graphite reporter)
   micrometer-prometheus  Adds support for Micrometer metrics (w/ Prometheus reporter)
   micrometer-statsd     Adds support for Micrometer metrics (w/ Statsd reporter)
@@ -275,61 +290,10 @@ Micronaut applications can be tested with any testing framework, because
 `io.micronaut.context.ApplicationContext` is capable of spinning up embedded
 instances quite easily. The CLI adds support for using JUnit, Spock and Spek.
 
-For example, in _plain_ JUnit 4, this how a end-to-end functional test looks like:
-
-+++ <details><summary> +++
-Click to expand
-+++ </summary><div> +++
-[source,java]
-----
-public class HelloWorldTest {
-    private static EmbeddedServer server;
-    private static HttpClient client;
-
-    @BeforeClass 
-    public static void setupServer() {
-        server = ApplicationContext.run(EmbeddedServer.class);
-        client = server.getApplicationContext().createBean(HttpClient.class, server.getURL());
-    }
-
-    @AfterClass 
-    public static void stopServer() {
-        if(server != null) { server.stop(); }
-        if(client != null) { client.stop(); }
-    }
-
-    @Test
-    public void testHelloWorkd() throws Exception {
-        String body = client.toBlocking().retrieve("/hello"); 
-        assertEquals(body, "Hello Galaxy!");
-    }
-}
-----
-+++ </div></details> +++
-
 In addition to that, if you are using JUnit 5 or Spock, there is special support that allows
 to remove most of the boilerplate about starting/stopping server and injecting beans. Check
 the https://micronaut-projects.github.io/micronaut-test/latest/guide/index.html[Micronaut Test]
 project for more information.
-
-icon:hand-o-right[] Micronaut Test is not (yet) included in the 1.0.x projects generated by the CLI,
-so let's add it. Modify `build.gradle` to remove `"junit:junit:4.12"` and `"org.hamcrest:hamcrest-all:1.3"`,
-and include:
-
-* `"org.junit.jupiter:junit-jupiter-engine:5.3.1"`
-* `"io.micronaut.test:micronaut-test-junit5:1.0.2"`
-
-Also, tell Gradle to use JUnit 5 Platform and display output:
-
-[source,java]
-----
-test {
-    useJUnitPlatform()
-    testLogging {
-        showStandardStreams = true
-    }
-}
-----
 
 We will use Gradle to run the tests, however, if you want to run them from your IDE, make
 sure you enable annotation processors. For example, in Intellij IDEA:
@@ -347,8 +311,6 @@ Click to expand
 include::./ex01/solution/hello-galaxy/src/test/java/hello/galaxy/HelloControllerTest.java[]
 ----
 +++ </div></details> +++
-
-As you can see, is much shorter than the previous version
 
 icon:hand-o-right[] Then, run the tests:
 
